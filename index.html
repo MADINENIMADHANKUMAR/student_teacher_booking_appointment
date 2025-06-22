@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student-Teacher Booking System</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #eef2f3;
+      text-align: center;
+      padding: 50px;
+    }
+    h1 {
+      color: #333;
+    }
+    input, button, select {
+      padding: 10px;
+      margin: 8px;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <h1>Student-Teacher Booking</h1>
+
+  <input type="email" id="email" placeholder="Enter Email"><br>
+  <input type="password" id="password" placeholder="Enter Password"><br>
+  <select id="role">
+    <option value="student">Student</option>
+    <option value="teacher">Teacher</option>
+  </select><br>
+
+  <button onclick="register()">Register</button>
+  <button onclick="login()">Login</button>
+  <button onclick="logout()">Logout</button>
+
+  <script type="module">
+    // Firebase CDN imports
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getDatabase, ref, push, set, child, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCk8O9PJJy8SEnSH2B7MF2Hsi28TDR7QY4",
+      authDomain: "studentteacherbooking-c34c9.firebaseapp.com",
+      databaseURL: "https://studentteacherbooking-c34c9-default-rtdb.firebaseio.com",
+      projectId: "studentteacherbooking-c34c9",
+      storageBucket: "studentteacherbooking-c34c9.appspot.com",
+      messagingSenderId: "785557593825",
+      appId: "1:785557593825:web:4eef374161d441336fe1a0",
+      measurementId: "G-9SVNZ5EZPZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // Logging function
+    function logAction(action, email = "Anonymous") {
+      const timestamp = new Date().toISOString();
+      const logEntry = {
+        action,
+        email,
+        timestamp
+      };
+      push(ref(db, 'logs/'), logEntry);
+      console.log(`[${timestamp}] ${action}`);
+    }
+
+    // Register
+    window.register = function () {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const role = document.getElementById('role').value;
+
+      if (!email || !password) return alert("Email and Password required.");
+
+      createUserWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          // Save role to DB
+          set(ref(db, `users/${uid}`), {
+            email,
+            role
+          });
+          alert(`Registered as ${role}`);
+          logAction("Registered as " + role, email);
+        })
+        .catch((error) => {
+          alert("Registration error: " + error.message);
+          console.error(error);
+        });
+    };
+
+    // Login
+    window.login = function () {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          const uid = userCredential.user.uid;
+          const userRef = ref(db, `users/${uid}`);
+          get(userRef).then(snapshot => {
+            if (snapshot.exists()) {
+              const userData = snapshot.val();
+              alert(`Welcome ${userData.role}`);
+              logAction("Logged in as " + userData.role, email);
+            } else {
+              alert("No role found for user.");
+              logAction("Logged in - no role found", email);
+            }
+          });
+        })
+        .catch(error => {
+          alert("Login error: " + error.message);
+          console.error(error);
+        });
+    };
+
+    // Logout
+    window.logout = function () {
+      signOut(auth)
+        .then(() => {
+          alert("Logged out");
+          logAction("User logged out");
+        })
+        .catch(error => {
+          alert("Logout error: " + error.message);
+          console.error(error);
+        });
+    };
+  </script>
+</body>
+</html>
