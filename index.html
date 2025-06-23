@@ -7,7 +7,9 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #eef2f3;
+      background: url('https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&w=1950&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: #333;
       text-align: center;
       padding: 20px;
     }
@@ -15,6 +17,8 @@
       padding: 10px;
       margin: 8px;
       width: 260px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
     button {
       background-color: #4CAF50;
@@ -23,10 +27,15 @@
       cursor: pointer;
     }
     #student-section, #teacher-section, #admin-section {
+      background-color: rgba(255, 255, 255, 0.95);
       display: none;
       margin-top: 30px;
       border-top: 2px solid #ccc;
-      padding-top: 20px;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 500px;
+      margin-left: auto;
+      margin-right: auto;
     }
   </style>
 </head>
@@ -35,13 +44,13 @@
 <h2>Student Teacher Booking System</h2>
 
 <label for="email">Email:</label><br>
-<input type="email" id="email" placeholder="Enter Email" title="Enter your email"><br>
+<input type="email" id="email" placeholder="Enter Email"><br>
 
 <label for="password">Password:</label><br>
-<input type="password" id="password" placeholder="Enter Password" title="Enter your password"><br>
+<input type="password" id="password" placeholder="Enter Password"><br>
 
 <label for="role">Role:</label><br>
-<select id="role" title="Select role">
+<select id="role">
   <option value="student">Student</option>
   <option value="teacher">Teacher</option>
   <option value="admin">Admin</option>
@@ -51,7 +60,7 @@
 <button onclick="login()">Login</button>
 <button onclick="logout()">Logout</button>
 
-<!-- STUDENT SECTION -->
+<!-- Student Section -->
 <div id="student-section">
   <h3>Student Panel</h3>
   <label for="teacherId">Teacher Email:</label><br>
@@ -70,7 +79,7 @@
   <button onclick="sendMessage()">Send Message</button>
 </div>
 
-<!-- TEACHER SECTION -->
+<!-- Teacher Section -->
 <div id="teacher-section">
   <h3>Teacher Panel</h3>
   <button onclick="viewAppointments()">View Appointments</button>
@@ -80,7 +89,7 @@
   <div id="teacherMessages"></div>
 </div>
 
-<!-- ADMIN SECTION -->
+<!-- Admin Section -->
 <div id="admin-section">
   <h3>Admin Panel</h3>
 
@@ -268,7 +277,8 @@
 
     if (teacherMessagesDiv) teacherMessagesDiv.innerHTML = messagesHTML;
     if (adminMessagesDiv) adminMessagesDiv.innerHTML = messagesHTML;
-};
+  };
 </script>
+
 </body>
 </html>
